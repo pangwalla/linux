@@ -372,6 +372,7 @@ struct q6afe {
 	wait_queue_head_t wait;
 	struct list_head port_list;
 	spinlock_t port_list_lock;
+	uint32_t lpass_hw_core_client_hdl[Q6AFE_LPASS_CORE_HW_VOTE_MAX];
 };
 
 struct afe_port_cmd_device_start {
@@ -899,6 +900,9 @@ static int q6afe_callback(struct apr_device *adev, struct apr_resp_pkt *data)
 				wake_up(&afe->wait);
 			}
 			break;
+		case AFE_CMD_REMOTE_LPASS_CORE_HW_DEVOTE_REQUEST:
+			dev_err(afe->dev, "AFE_CMD_REMOTE_LPASS_CORE_HW_DEVOTE_REQUEST clk_state=%d\n", res->status);
+			break;
 		default:
 			dev_err(afe->dev, "Unknown cmd 0x%x\n",	res->opcode);
 			break;
@@ -908,6 +912,9 @@ static int q6afe_callback(struct apr_device *adev, struct apr_resp_pkt *data)
 	case AFE_CMD_RSP_REMOTE_LPASS_CORE_HW_VOTE_REQUEST:
 		afe->result.opcode = hdr->opcode;
 		afe->result.status = res->status;
+		if (hdr->token < Q6AFE_LPASS_CORE_HW_VOTE_MAX) {
+			afe->lpass_hw_core_client_hdl[hdr->token] = res->opcode;
+		}
 		wake_up(&afe->wait);
 		break;
 	default:
@@ -1696,6 +1703,10 @@ int q6afe_vote_lpass_core_hw(struct device *dev, uint32_t hw_block_id,
 	int ret = 0;
 	int pkt_size;
 	void *p;
+	if (client_handle <= 0) {
+		dev_err(afe->dev, "%s: invalid client handle\n", __func__);
+		return -EINVAL;
+	}
 
 	pkt_size = APR_HDR_SIZE + sizeof(*vote_cfg);
 	p = kzalloc(pkt_size, GFP_KERNEL);
@@ -1721,7 +1732,9 @@ int q6afe_vote_lpass_core_hw(struct device *dev, uint32_t hw_block_id,
 			       AFE_CMD_RSP_REMOTE_LPASS_CORE_HW_VOTE_REQUEST);
 	if (ret)
 		dev_err(afe->dev, "AFE failed to vote (%d)\n", hw_block_id);
-
+	else {
+		*client_handle = afe->lpass_hw_core_client_hdl[hw_block_id];
+	}
 
 	kfree(pkt);
 	return ret;
