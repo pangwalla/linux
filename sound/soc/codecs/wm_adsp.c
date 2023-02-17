@@ -792,6 +792,52 @@ static int wm_adsp_request_firmware_file(struct wm_adsp *dsp,
 	return ret;
 }
 
+static int wm_adsp_request_firmware_file_new(struct wm_adsp *dsp,
+					 const struct firmware **firmware, char **filename,
+					 const char *dir, const char *system_name,
+					 const char *asoc_component_prefix,
+					 const char *filetype)
+{
+	struct cs_dsp *cs_dsp = &dsp->cs_dsp;
+	char *s, c;
+	int ret = 0;
+
+	if (asoc_component_prefix)
+		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s.%s", dir, dsp->part,
+				      dsp->fwf_name, wm_adsp_fw[dsp->fw].file,
+				      asoc_component_prefix, filetype);
+	else
+		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s.%s", dir, dsp->part, dsp->fwf_name,
+				      wm_adsp_fw[dsp->fw].file, filetype);
+
+	if (*filename == NULL)
+		return -ENOMEM;
+
+	/*
+	 * Make sure that filename is lower-case and any non alpha-numeric
+	 * characters except full stop and forward slash are replaced with
+	 * hyphens.
+	 */
+	s = *filename;
+	while (*s) {
+		c = *s;
+		if (isalnum(c))
+			*s = tolower(c);
+		else if ((c != '.') && (c != '/'))
+			*s = '-';
+		s++;
+	}
+
+	ret = request_firmware(firmware, *filename, cs_dsp->dev);
+	if (ret != 0) {
+		adsp_dbg(dsp, "Failed to request '%s'\n", *filename);
+		kfree(*filename);
+		*filename = NULL;
+	}
+
+	return ret;
+}
+
 static const char *cirrus_dir = "cirrus/";
 static int wm_adsp_request_firmware_files(struct wm_adsp *dsp,
 					  const struct firmware **wmfw_firmware,
@@ -845,8 +891,8 @@ static int wm_adsp_request_firmware_files(struct wm_adsp *dsp,
 					    cirrus_dir, NULL, NULL, "wmfw");
 	if (!ret) {
 		adsp_dbg(dsp, "Found '%s'\n", *wmfw_filename);
-		wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename,
-					      cirrus_dir, NULL, NULL, "bin");
+		wm_adsp_request_firmware_file_new(dsp, coeff_firmware, coeff_filename,
+					      cirrus_dir, NULL, asoc_component_prefix, "bin");
 		return 0;
 	}
 

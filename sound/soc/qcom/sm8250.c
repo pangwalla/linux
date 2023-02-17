@@ -16,6 +16,7 @@
 
 #define DRIVER_NAME		"sm8250"
 #define MI2S_BCLK_RATE		1536000
+#define TDM_BCLK_RATE			6144000
 
 struct sm8250_snd_data {
 	bool stream_prepared[AFE_PORT_MAX];
@@ -53,6 +54,7 @@ static int sm8250_snd_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
+	int ret,j;
 
 	switch (cpu_dai->id) {
 	case TERTIARY_MI2S_RX:
@@ -62,6 +64,71 @@ static int sm8250_snd_startup(struct snd_pcm_substream *substream)
 			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
 		snd_soc_dai_set_fmt(cpu_dai, fmt);
 		snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+		break;
+	case TERTIARY_TDM_RX_0:
+		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_DSP_A;
+		snd_soc_dai_set_sysclk(cpu_dai,
+			Q6AFE_LPASS_CLK_ID_TER_TDM_IBIT,
+			TDM_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+
+		for_each_rtd_codec_dais(rtd, j, codec_dai) {
+			if (!strcmp(codec_dai->component->name_prefix, "TLH")) {
+			   ret = snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+			   if (ret < 0) {
+			           dev_err(rtd->dev, "TLH TDM fmt err:%d\n", ret);
+			           return ret;
+			   }
+			}
+			if (!strcmp(codec_dai->component->name_prefix, "TLL")) {
+			   ret = snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+			   if (ret < 0) {
+			           dev_err(rtd->dev, "TLL TDM fmt err:%d\n", ret);
+			           return ret;
+			   }
+			}
+			if (!strcmp(codec_dai->component->name_prefix, "TRH")) {
+			   ret = snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+			   if (ret < 0) {
+			           dev_err(rtd->dev, "TRH TDM fmt err:%d\n", ret);
+			           return ret;
+			   }
+			}
+			if (!strcmp(codec_dai->component->name_prefix, "TRL")) {
+			   ret = snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+			   if (ret < 0) {
+			           dev_err(rtd->dev, "TRL TDM fmt err:%d\n", ret);
+			           return ret;
+			   }
+			}
+			if (!strcmp(codec_dai->component->name_prefix, "BLH")) {
+			   ret = snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+			   if (ret < 0) {
+			           dev_err(rtd->dev, "BLH TDM fmt err:%d\n", ret);
+			           return ret;
+			   }
+			}
+			if (!strcmp(codec_dai->component->name_prefix, "BLL")) {
+			   ret = snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+			   if (ret < 0) {
+			           dev_err(rtd->dev, "BLL TDM fmt err:%d\n", ret);
+			           return ret;
+			   }
+			}
+			if (!strcmp(codec_dai->component->name_prefix, "BRH")) {
+			   ret = snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+			   if (ret < 0) {
+			           dev_err(rtd->dev, "BRH TDM fmt err:%d\n", ret);
+			           return ret;
+			   }
+			}
+			if (!strcmp(codec_dai->component->name_prefix, "BRL")) {
+			   ret = snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+			   if (ret < 0) {
+			           dev_err(rtd->dev, "BRL TDM fmt err:%d\n", ret);
+			           return ret;
+			   }
+			}
+		}
 		break;
 	default:
 		break;
