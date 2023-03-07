@@ -38,6 +38,7 @@
 	};
 
 	chosen {
+		bootargs = "clk_ignore_unused";
 	};
 
 	battery_l: battery-l {
