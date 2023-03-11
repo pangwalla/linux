@@ -1,0 +1,95 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ */
+
+/dts-v1/;
+
+#include "sm8250.dtsi"
+#include "pm8150.dtsi"
+/*#include "pm8150b.dtsi"*/
+/*#include "pm8150l.dtsi"*/
+/*#include "pm8009.dtsi"*/
+
+/*
+ * Delete following upstream (sm8250.dtsi) reserved
+ * memory mappings which are different in this device.
+ */
+/delete-node/ &xbl_aop_mem;
+/delete-node/ &slpi_mem;
+/delete-node/ &adsp_mem;
+/delete-node/ &spss_mem;
+/delete-node/ &cdsp_secure_heap;
+
+/ {
+	model = "OnePlus 8 Pro";
+	compatible = "qcom,kona";
+	classis-type = "handset";
+
+	/* required for bootloader to select correct board */
+	qcom,msm-id = <356 0x10000>; /* SM8250 v2.1 */
+	qcom,board-id = <8 0>;
+
+	chosen {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+                stdout-path = "serial0:115200n8";
+
+		framebuffer: framebuffer@9c000000 {
+			compatible = "simple-framebuffer";
+			reg = <0x0 0x9c000000 0x0 (1140 * 3168 * 4)>;
+			width = <1140>;
+			height = <3168>;
+			stride = <(1140 * 4)>;
+			format = "a8r8g8b8";
+		};
+	};
+
+	gpio_keys: gpio-keys {
+		compatible = "gpio-keys";
+
+                vol-up {
+			label = "Volume Up";
+			gpios = <&pm8150_gpios 6 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEUP>;
+			debounce-interval = <15>;
+			linux,can-disable;
+			gpio-key,wakeup;
+		};
+	};
+
+	reserved-memory {
+		xbl_aop_mem: memory@80700000 {
+			reg = <0x0 0x80600000 0x0 0x260000>;
+			no-map;
+		};
+
+		slpi_mem: memory@88c00000 {
+			reg = <0x0 0x88c00000 0x0 0x2f00000>;
+			no-map;
+		};
+
+		adsp_mem: memory@8bb00000 {
+			reg = <0x0 0x8bb00000 0x0 0x2500000>;
+			no-map;
+		};
+
+		spss_mem: memory@8e000000 {
+			reg = <0x0 0x8e000000 0x0 0x100000>;
+			no-map;
+		};
+
+		cdsp_secure_heap: memory@8e100000 {
+			reg = <0x0 0x8e100000 0x0 0x4600000>;
+			no-map;
+		};
+
+		cont_splash_memory: memory@9c000000 {
+			reg = <0x0 0x9c000000 0x0 0x2400000>;
+			no-map;
+		};
+
+	};
+};
+
