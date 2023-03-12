@@ -1,21 +1,8 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- */
-
 /dts-v1/;
 
 #include "sm8250.dtsi"
 #include "pm8150.dtsi"
-/*#include "pm8150b.dtsi"*/
-/*#include "pm8150l.dtsi"*/
-/*#include "pm8009.dtsi"*/
 
-/*
- * Delete following upstream (sm8250.dtsi) reserved
- * memory mappings which are different in this device.
- */
-/delete-node/ &xbl_aop_mem;
-/delete-node/ &slpi_mem;
 /delete-node/ &adsp_mem;
 /delete-node/ &spss_mem;
 /delete-node/ &cdsp_secure_heap;
@@ -23,25 +10,23 @@
 / {
 	model = "OnePlus 8 Pro";
 	compatible = "qcom,kona";
-	classis-type = "handset";
+	chassis-type = "handset";
 
-	/* required for bootloader to select correct board */
-	qcom,msm-id = <356 0x10000>; /* SM8250 v2.1 */
+	qcom,msm-id = <356 0x10000>;
 	qcom,board-id = <8 0>;
 
 	chosen {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
-                stdout-path = "serial0:115200n8";
+        stdout-path = "serial0:115200n8";
 
 		framebuffer: framebuffer@9c000000 {
 			compatible = "simple-framebuffer";
-			reg = <0x0 0x9c000000 0x0 (1140 * 3168 * 4)>;
-			width = <1140>;
+			reg = <0x0 0x9c000000 0x0 (1440 * 3168 * 4)>;
+			width = <1440>;
 			height = <3168>;
-			stride = <(1140 * 4)>;
+			stride = <(1440 * 4)>;
 			format = "a8r8g8b8";
 		};
 	};
@@ -49,7 +34,7 @@
 	gpio_keys: gpio-keys {
 		compatible = "gpio-keys";
 
-                vol-up {
+        vol-up {
 			label = "Volume Up";
 			gpios = <&pm8150_gpios 6 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_VOLUMEUP>;
@@ -85,11 +70,29 @@
 			no-map;
 		};
 
-		cont_splash_memory: memory@9c000000 {
-			reg = <0x0 0x9c000000 0x0 0x2400000>;
-			no-map;
-		};
-
+        cont_splash_memory: memory@9c000000 {
+            reg = <0x0 0x9c000000 0x0 0x2400000>;
+            no-map;
+        };
 	};
 };
 
+&usb_1 {
+    qcom,select-utmi-as-pipe-clk;
+	status = "okay";
+};
+
+&usb_1_dwc3 {
+	dr_mode = "peripheral";
+
+	maximum-speed = "high-speed";
+	phys = <&usb_1_hsphy>;
+	phy-names = "usb2-phy";
+};
+
+&usb_1_hsphy {
+	vdda-pll-supply = <&vreg_l5a_0p88>;
+	vdda18-supply = <&vreg_l12a_1p8>;
+	vdda33-supply = <&vreg_l2a_3p1>;
+	status = "okay";
+};
