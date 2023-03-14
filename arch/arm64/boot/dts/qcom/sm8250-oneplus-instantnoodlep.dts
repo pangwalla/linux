@@ -81,18 +81,3 @@
     qcom,select-utmi-as-pipe-clk;
 	status = "okay";
 };
-
-&usb_1_dwc3 {
-	dr_mode = "peripheral";
-
-	maximum-speed = "high-speed";
-	phys = <&usb_1_hsphy>;
-	phy-names = "usb2-phy";
-};
-
-&usb_1_hsphy {
-	vdda-pll-supply = <&vreg_l5a_0p88>;
-	vdda18-supply = <&vreg_l12a_1p8>;
-	vdda33-supply = <&vreg_l2a_3p1>;
-	status = "okay";
-};
