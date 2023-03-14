@@ -8,11 +8,15 @@
 /delete-node/ &cdsp_secure_heap;
 
 / {
-	model = "OnePlus 8 Pro";
+	model = "Qualcomm Technologies, Inc. kona v2.1 SoC 19805";
 	compatible = "qcom,kona";
 	chassis-type = "handset";
 
-	qcom,msm-id = <356 0x10000>;
+/*  OP decompiled DBTO has this, but won't take it
+	qcom,msm-id = <0x164 0x20001>;
+	qcom,board-id = <0x00 0x00>;
+*/
+    qcom,msm-id = <356 0x10000>;
 	qcom,board-id = <8 0>;
 
 	chosen {
