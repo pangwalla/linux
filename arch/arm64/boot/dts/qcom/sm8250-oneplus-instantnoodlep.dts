@@ -27,10 +27,10 @@
 
 		framebuffer: framebuffer@9c000000 {
 			compatible = "simple-framebuffer";
-			reg = <0x0 0x9c000000 0x0 (1440 * 3168 * 4)>;
+			reg = <0x0 0x9c000000 0x0 (1440 * 3168 * 3)>;
 			width = <1440>;
 			height = <3168>;
-			stride = <(1440 * 4)>;
+			stride = <(1440 * 3)>;
 			format = "a8r8g8b8";
 		};
 	};
