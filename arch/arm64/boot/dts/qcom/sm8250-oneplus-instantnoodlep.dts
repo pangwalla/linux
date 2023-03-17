@@ -156,11 +156,29 @@
 	vreg_s6c_0p88: smpc6-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vreg_s6c_0p88";
-
 		regulator-min-microvolt = <880000>;
 		regulator-max-microvolt = <880000>;
 		regulator-always-on;
 		vin-supply = <&vph_pwr>;
+	};
+
+    qca639x: qca639x {
+		compatible = "qcom,qca6390";
+		#power-domain-cells = <0>;
+
+		vddaon-supply = <&vreg_s6a_0p6>;
+		vddpmu-supply = <&vreg_s6a_0p6>;
+		vddrfa1-supply = <&vreg_s6a_0p6>;
+		vddrfa2-supply = <&vreg_s8c_1p2>;
+		vddrfa3-supply = <&vreg_s5a_1p8>;
+		vddpcie1-supply = <&vreg_s8c_1p2>;
+		vddpcie2-supply = <&vreg_s5a_1p8>;
+		vddio-supply = <&vreg_s4a_1p8>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_en_state>;
+
+		wlan-en-gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
 	};
 };
 
@@ -530,6 +548,73 @@
 
 &tlmm {
 	gpio-reserved-ranges = <28 4>, <40 4>;
+
+    bt_en_state: bt-default-state {
+		bt-en {
+			pins = "gpio21";
+			function = "gpio";
+
+			drive-strength = <16>;
+			output-low;
+			bias-pull-up;
+		};
+	};
+
+	wlan_en_state: wlan-default-state {
+		wlan-en {
+			pins = "gpio20";
+			function = "gpio";
+
+			drive-strength = <16>;
+			output-low;
+			bias-pull-up;
+		};
+	};
+
+	tert_tdm_active: tert-tdm-active {
+		sck {
+			pins = "gpio133";
+			function = "mi2s2_sck";
+			drive-strength = <8>;   /* 8 mA */
+			bias-disable;           /* NO PULL */
+			output-high;
+		};
+
+		ws {
+			pins = "gpio135";
+			function = "mi2s2_ws";
+			drive-strength = <8>;   /* 8 mA */
+			bias-disable;           /* NO PULL */
+			output-high;
+		};
+
+		data0 {
+			pins = "gpio134";
+			function = "mi2s2_data0";
+			drive-strength = <8>;   /* 8 mA */
+			bias-disable;           /* NO PULL */
+		};
+
+		data1 {
+			pins = "gpio137";
+			function = "mi2s2_data1";
+			drive-strength = <8>;   /* 8 mA */
+			bias-disable;           /* NO PULL */
+		};
+	};
+};
+
+&uart6 {
+	status = "okay";
+
+	bluetooth {
+		compatible = "qcom,qca6390-bt";
+		pinctrl-names = "default";
+		pinctrl-0 = <&bt_en_state>;
+
+		power-domains = <&qca639x>;
+		enable-gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
+	};
 };
 
 &ufs_mem_hc {
