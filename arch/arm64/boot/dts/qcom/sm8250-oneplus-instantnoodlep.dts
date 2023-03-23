@@ -500,12 +500,12 @@
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};*/
 
-		vreg_l2f_1p1: ldo2 {
+		/*vreg_l2f_1p1: ldo2 {
 			regulator-name = "vreg_l2f_1p1";
 			regulator-min-microvolt = <1100000>;
 			regulator-max-microvolt = <1100000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-		};
+		};*/
 
 		/* L3 & L4 are unused. */
 		/*vreg_l3f_1p05: ldo3 {
