@@ -34,12 +34,10 @@
 	compatible = "qcom,kona";
 	chassis-type = "handset";
 
-/*  OP decompiled DBTO has this, but won't take it
-	qcom,msm-id = <0x164 0x20001>;
-	qcom,board-id = <0x00 0x00>;
-*/
-    qcom,msm-id = <356 0x10000>;
-	qcom,board-id = <8 0>;
+    qcom,msm-id = <356 0x10000>,
+                    <0x164 0x20001>;
+	qcom,board-id = <8 0>,
+                    <0x00 0x00>;
 
 	chosen {
 		#address-cells = <2>;
