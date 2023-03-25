@@ -152,7 +152,6 @@
 		regulator-max-microvolt = <3700000>;
 	};
 
-	/* S6c is really ebi.lvl but it's there for supply map completeness sake. */
 	vreg_s6c_0p88: smpc6-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vreg_s6c_0p88";
@@ -510,38 +509,6 @@
 			drive-strength = <16>;
 			output-low;
 			bias-pull-up;
-		};
-	};
-
-	tert_tdm_active: tert-tdm-active {
-		sck {
-			pins = "gpio133";
-			function = "mi2s2_sck";
-			drive-strength = <8>;   /* 8 mA */
-			bias-disable;           /* NO PULL */
-			output-high;
-		};
-
-		ws {
-			pins = "gpio135";
-			function = "mi2s2_ws";
-			drive-strength = <8>;   /* 8 mA */
-			bias-disable;           /* NO PULL */
-			output-high;
-		};
-
-		data0 {
-			pins = "gpio134";
-			function = "mi2s2_data0";
-			drive-strength = <8>;   /* 8 mA */
-			bias-disable;           /* NO PULL */
-		};
-
-		data1 {
-			pins = "gpio137";
-			function = "mi2s2_data1";
-			drive-strength = <8>;   /* 8 mA */
-			bias-disable;           /* NO PULL */
 		};
 	};
 };
