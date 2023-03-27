@@ -532,8 +532,24 @@
 	status = "okay";
 };
 
-&i2c5 {
+&i2c13 {
+	clock-frequency = <400000>;
     status = "okay";
+
+	touchscreen@48 {
+		compatible = "samsung,s6sy761";
+		reg = <0x48>;
+		interrupt-parent = <&tlmm>;
+        interrupts = <0x27 0x2008>;
+        /* mline 6871 downstream pulled dts */
+        vdd-supply = <&vreg_l13a_ts_3p0>;
+        /* mline 7077 downstream pulled dts */
+		avdd-supply = <&vreg_l1c_1p8>;
+
+		pinctrl-names = "default";
+		//pinctrl-0 = <39 38>;
+		pinctrl-0 = <2 &qup_spi13_cs_gpio &tp_rst_suspend>;
+	};
 };
 
 &mdss {
@@ -635,6 +651,13 @@
 			output-low;
 			bias-pull-up;
 		};
+	};
+
+	tp_rst_suspend: tp_rst_suspend {
+		pins = "gpio38";
+		function = "gpio";
+		drive-strength = <0x02>;
+		bias-pull-down;
 	};
 };
 
